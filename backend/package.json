@@ -3,9 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "bun run dist/index.ts",
+    "start": "bun run src/index.ts",
     "dev": "bun --watch src/index.ts",
-    "build": "bun build ./src/index.ts --outdir ./dist",
+    "build": "bun build ./src/index.ts --outdir ./dist --target node",
     "test": "bun test"
   },
   "devDependencies": {
@@ -25,11 +25,14 @@
   "dependencies": {
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.6",
+    "aws-sdk": "^2.1672.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.5.1"
+    "mock-aws-s3": "^4.0.2",
+    "mongoose": "^8.5.1",
+    "nock": "^13.5.4"
   }
 }
