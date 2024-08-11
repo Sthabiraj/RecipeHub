@@ -3,7 +3,7 @@
     "backend": {
       "path": "backend",
       "buildCommand": "bun build ./src/index.ts --outdir ./dist --target node",
-      "startCommand": "bun run dist/index.js"
+      "startCommand": "bun run src/index.ts"
     }
   }
 }
