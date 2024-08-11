@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "backend": {
+      "path": "backend",
+      "buildCommand": "bun build ./src/index.ts --outdir ./dist",
+      "startCommand": "bun run dist/index.js"
+    }
+  }
+}
