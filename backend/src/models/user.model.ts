@@ -1,6 +1,24 @@
 import { model, Schema } from "mongoose";
 
-const userSchema = new Schema(
+export interface IUser {
+  _id: string;
+  name: string;
+  email: string;
+  password?: string;
+  role: string;
+  bio: string;
+  address: string;
+  profileImage: string;
+  socialLinks: {
+    name: string;
+    url: string;
+  }[];
+  recipes: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -45,18 +63,11 @@ const userSchema = new Schema(
         },
       },
     ],
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    timestamps: true,
   }
 );
 

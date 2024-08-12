@@ -6,14 +6,13 @@ import {
   getRecipeById,
   updateRecipe,
 } from "../controllers/recipe.controller";
-import authenticate from "../middlewares/auth";
 
 const recipeRoutes = Router();
 
-recipeRoutes.post("/", authenticate, createRecipe);
+recipeRoutes.post("/", createRecipe);
 recipeRoutes.get("/:id", getRecipeById);
-recipeRoutes.put("/:id", authenticate, updateRecipe);
-recipeRoutes.delete("/:id", authenticate, deleteRecipe);
+recipeRoutes.put("/:id", updateRecipe);
+recipeRoutes.delete("/:id", deleteRecipe);
 recipeRoutes.get("/", getAllRecipes);
 
 export default recipeRoutes;

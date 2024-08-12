@@ -1,12 +1,16 @@
 import { Router } from "express";
-import * as review from "../controllers/review.controller";
-import authenticate from "../middlewares/auth";
+import {
+  createReview,
+  getReviews,
+  updateReview,
+  deleteReview,
+} from "../controllers/review.controller";
 
 const reviewRoutes = Router();
 
-reviewRoutes.post("/", authenticate, review.createReview);
-reviewRoutes.get("/:recipeId", review.getReviews);
-reviewRoutes.put("/:id", authenticate, review.updateReview);
-reviewRoutes.delete("/:id", authenticate, review.deleteReview);
+reviewRoutes.post("/", createReview);
+reviewRoutes.get("/:recipeId", getReviews);
+reviewRoutes.put("/:id", updateReview);
+reviewRoutes.delete("/:id", deleteReview);
 
 export default reviewRoutes;

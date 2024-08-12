@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
 import { User } from "../models";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import nameToSlug from "../utils/nameToSlug";
+import { IUser } from "../models/user.model";
+import { generateTokenAndSendCookie } from "../utils/generateTokenAndSendCookie";
 
 // Define input types for registration and login
 interface RegisterInput {
   name: string;
   email: string;
   password: string;
-  coverImage?: string;
+  profileImage?: string;
 }
 
 interface LoginInput {
@@ -22,17 +23,16 @@ interface ApiResponse {
   success: boolean;
   message: string;
   error?: string;
-  user?: any;
-  token?: string;
+  user?: IUser;
 }
 
 // Register a new user
-const register = async (
+export const register = async (
   req: Request<{}, {}, RegisterInput>,
   res: Response<ApiResponse>
 ) => {
   try {
-    const { name, email, password, coverImage } = req.body;
+    const { name, email, password, profileImage } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -51,15 +51,18 @@ const register = async (
       name,
       email,
       password: hashedPassword,
-      coverImage: coverImage
-        ? coverImage
-        : `https://ui-avatars.com/api/?name=${nameToSlug(name)}&background=random&rounded=true`,
+      profileImage:
+        profileImage ||
+        `https://ui-avatars.com/api/?name=${nameToSlug(name)}&background=random&rounded=true`,
     });
 
     await newUser.save();
 
     // Remove password from the user object before sending in response
     const { password: _, ...userWithoutPassword } = newUser.toObject();
+
+    // Generate JWT token and send it as a cookie
+    generateTokenAndSendCookie(res, newUser);
 
     res.status(201).json({
       // Created status code
@@ -78,7 +81,7 @@ const register = async (
 };
 
 //  Login an existing user
-const login = async (
+export const login = async (
   req: Request<{}, {}, LoginInput>,
   res: Response<ApiResponse>
 ) => {
@@ -94,30 +97,25 @@ const login = async (
     }
 
     // Verify password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res
-        .status(401) // Unauthorized status code
-        .json({ success: false, message: "Invalid credentials" });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id, email: user.email, name: user.name, role: user.role },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: "1h",
+    if (user.password) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res
+          .status(401) // Unauthorized status code
+          .json({ success: false, message: "Invalid credentials" });
       }
-    );
+    }
 
     // Remove password from the user object before sending in response
     const { password: _, ...userWithoutPassword } = user.toObject();
+
+    // Generate JWT token and send it as a cookie
+    generateTokenAndSendCookie(res, user);
 
     res.json({
       success: true,
       message: "Login successful",
       user: userWithoutPassword,
-      token,
     });
   } catch (error) {
     // Handle any errors during login
@@ -129,4 +127,36 @@ const login = async (
   }
 };
 
-export { register, login };
+// Logout a user
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token");
+    res.json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error logging out",
+      error: (error as Error).message,
+    });
+  }
+};
+
+// Check Auth Status
+export const checkAuth = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    return res.json({ success: true, user });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error checking auth status",
+      error: (error as Error).message,
+    });
+  }
+};
