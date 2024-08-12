@@ -10,9 +10,7 @@ interface ApiResponse {
 
 // Define the structure of the JWT payload
 interface JwtPayload {
-  id: string;
-  email: string;
-  name: string;
+  userId: string;
   role: string;
 }
 
@@ -20,31 +18,24 @@ interface JwtPayload {
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload;
+      userId: string;
+      userRole: string;
     }
   }
 }
 
-const authenticate = (
+// Verify the token provided in the request
+export const verifyToken = (
   req: Request,
   res: Response<ApiResponse>,
   next: NextFunction
 ) => {
-  const authHeader = req.header("Authorization");
+  const token = req.cookies.token;
 
-  if (!authHeader) {
+  if (!token) {
     return res
       .status(401)
       .json({ success: false, message: "Access denied. No token provided." });
-  }
-
-  const [bearer, token] = authHeader.split(" ");
-
-  if (bearer !== "Bearer" || !token) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid authorization header format.",
-    });
   }
 
   try {
@@ -52,7 +43,8 @@ const authenticate = (
       token,
       process.env.JWT_SECRET as string
     ) as JwtPayload;
-    req.user = decoded;
+    req.userId = decoded.userId;
+    req.userRole = decoded.role;
     next();
   } catch (err) {
     if (err instanceof jwt.TokenExpiredError) {
@@ -67,12 +59,10 @@ const authenticate = (
         message: "Invalid token.",
       });
     }
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "An error occurred while authenticating.",
       error: (err as Error).message,
     });
   }
 };
-
-export default authenticate;

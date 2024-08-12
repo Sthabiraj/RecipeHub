@@ -15,7 +15,6 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { LoginFormData, loginSchema } from '@/schemas/loginSchema';
 import { useLogin } from '@/hooks/useLogin';
-import Cookies from 'js-cookie';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -34,17 +33,6 @@ export default function LoginForm() {
       const res = await loginMutation.mutateAsync(data);
       // Login successful
       toast.success(res.message || 'Logged in successfully');
-
-      if (res.token) {
-        // Set token in cookie
-        Cookies.set('authToken', res.token, {
-          expires: 7,
-          secure: true,
-          sameSite: 'Strict',
-          httpOnly: true,
-        });
-      }
-
       router.push('/');
     } catch (error) {
       // Extract error message from response

@@ -7,12 +7,15 @@ interface LoginResponse {
   message: string;
   error?: string;
   user?: any;
-  token?: string;
 }
 
 export function useLogin() {
   return useMutation<LoginResponse, Error, LoginFormData>({
     mutationFn: (userData) =>
-      api.post<LoginResponse>('/auth/login', userData).then((res) => res.data),
+      api
+        .post<LoginResponse>('/auth/login', userData, {
+          withCredentials: true,
+        })
+        .then((res) => res.data),
   });
 }
