@@ -7,14 +7,15 @@ interface RegisterResponse {
   message: string;
   error?: string;
   user?: any;
-  token?: string;
 }
 
 export function useRegister() {
   return useMutation<RegisterResponse, Error, RegisterFormData>({
     mutationFn: (userData) =>
       api
-        .post<RegisterResponse>('/auth/register', userData)
+        .post<RegisterResponse>('/auth/register', userData, {
+          withCredentials: true,
+        })
         .then((res) => res.data),
   });
 }

@@ -33,7 +33,7 @@ export default function RegisterForm() {
       await registerMutation.mutateAsync(data);
       // Registration successful
       toast.success('Account created successfully');
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       // Extract error message from response
       const errorMessage =
