@@ -1,3 +1,5 @@
+'use client';
+
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { RegisterFormData } from '@/schemas/registerSchema';
