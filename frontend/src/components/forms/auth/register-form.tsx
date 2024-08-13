@@ -1,11 +1,11 @@
 'use client';
 
-import CustomButton from '../custom/custom-button';
-import CustomInput from '../custom/custom-input';
-import GoogleIcon from '../icons/google';
-import FacebookIcon from '../icons/facebook';
+import CustomButton from '@/components/buttons/custom-button';
+import CustomInput from '@/components/inputs/custom-input';
+import GoogleIcon from '@/components/icons/google';
+import FacebookIcon from '@/components/icons/facebook';
 import Link from 'next/link';
-import { buttonVariants } from '../ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
