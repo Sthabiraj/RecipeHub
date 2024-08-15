@@ -81,7 +81,7 @@ const changePassword = async (req: Request<{ id: string }>, res: Response) => {
     }
 
     // Check old password
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isMatch = await bcrypt.compare(oldPassword, user.password as string);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid password" });
     }
