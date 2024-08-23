@@ -1,7 +1,7 @@
 import { LoginFormData } from '@/schemas/loginSchema';
 import { RegisterFormData } from '@/schemas/registerSchema';
 import { AuthResponse } from '@/types';
-import { api } from '@/utils/api';
+import { api } from '@/lib/api';
 
 export const authService = {
   register: async (userData: RegisterFormData): Promise<AuthResponse> => {

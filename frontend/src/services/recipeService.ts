@@ -1,5 +1,5 @@
 import { RecipeResponse, Recipe } from '@/types';
-import { api } from '@/utils/api';
+import { api } from '@/lib/api';
 
 export const recipeService = {
   createRecipe: async (recipeData: Recipe) => {

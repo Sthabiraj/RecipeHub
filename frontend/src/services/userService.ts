@@ -1,5 +1,5 @@
 import { UserResponse, User } from '@/types';
-import { api } from '@/utils/api';
+import { api } from '@/lib/api';
 
 export const userService = {
   getUser: async (id: string): Promise<UserResponse> => {
