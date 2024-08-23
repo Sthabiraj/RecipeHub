@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { api } from '@/utils/api';
+import { api } from '@/lib/api';
 import { LoginFormData } from '@/schemas/loginSchema';
 
 interface LoginResponse {
