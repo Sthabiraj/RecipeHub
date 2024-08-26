@@ -30,9 +30,9 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       console.log(data);
-      const res = await loginMutation.mutateAsync(data);
+      await loginMutation.mutateAsync(data);
       // Login successful
-      toast.success(res.message || 'Logged in successfully');
+      toast.success('Logged in successfully');
       router.push('/');
     } catch (error) {
       // Extract error message from response

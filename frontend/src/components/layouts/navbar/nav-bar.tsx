@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import NavButtons from './nav-buttons';
 
 export default function NavBar() {
   return (
@@ -27,13 +28,11 @@ export default function NavBar() {
           </Link>
         </div>
       </div>
-      <div className='flex gap-4'>
+      <div className='flex items-center gap-4'>
         <Button variant='ghost' className='rounded-full'>
           + Add a recipe
         </Button>
-        <Button className='rounded-full bg-[#407948] hover:bg-[#407948]/90'>
-          Login / Sign Up
-        </Button>
+        <NavButtons />
       </div>
     </nav>
   );
