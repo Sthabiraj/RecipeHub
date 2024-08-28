@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import NavButtons from './nav-buttons';
+import { Plus } from 'lucide-react';
 
 export default function NavBar() {
   return (
@@ -29,8 +30,12 @@ export default function NavBar() {
         </div>
       </div>
       <div className='flex items-center gap-4'>
-        <Button variant='ghost' className='rounded-full'>
-          + Add a recipe
+        <Button
+          variant='ghost'
+          className='flex items-center gap-1 rounded-full text-base'
+        >
+          <Plus className='size-4' />
+          <span>Add a recipe</span>
         </Button>
         <NavButtons />
       </div>

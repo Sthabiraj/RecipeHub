@@ -10,3 +10,11 @@ export const loginAction = async (userData: LoginFormData) => {
 export const logoutAction = async () => {
   await signOut();
 };
+
+export const googleOAuthAction = async () => {
+  await signIn('google', { redirectTo: '/' });
+};
+
+export const facebookOAuthAction = async () => {
+  await signIn('github', { redirectTo: '/' });
+};

@@ -29,9 +29,7 @@ export default async function NavButtons() {
         </div>
       ) : (
         <Link href='/login'>
-          <Button className='rounded-full bg-[#407948] hover:bg-[#407948]/90'>
-            Login / Sign Up
-          </Button>
+          <Button className='rounded-full text-base'>Login / Sign Up</Button>
         </Link>
       )}
     </>

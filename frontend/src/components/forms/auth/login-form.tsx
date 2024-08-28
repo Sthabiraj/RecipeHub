@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { LoginFormData, loginSchema } from '@/schemas/loginSchema';
 import { useLogin } from '@/hooks/useLogin';
+import OAuthButtons from '@/components/buttons/oauth/oauth-buttons';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -62,13 +63,10 @@ export default function LoginForm() {
         />
         <div className='absolute inset-0 bg-black/50' />
       </figure>
-      <form
-        className='flex min-h-screen items-center justify-center bg-white px-8 py-8 lg:rounded-l-3xl'
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <section className='flex min-h-screen items-center justify-center bg-white px-8 py-8 lg:rounded-l-3xl'>
         <div className='w-full max-w-lg space-y-6'>
           <h1 className='text-2xl font-semibold sm:text-3xl'>Log In</h1>
-          <div className='space-y-4'>
+          <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
             <CustomInput
               label='E-mail Address'
               placeholder='Enter your e-mail'
@@ -90,22 +88,13 @@ export default function LoginForm() {
             >
               Log In
             </CustomButton>
-          </div>
+          </form>
           <div className='flex w-full items-center gap-3 text-[#A3A3A3]'>
             <hr className='w-full' />
             <span className='whitespace-nowrap text-sm'>OR</span>
             <hr className='w-full' />
           </div>
-          <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-            <CustomButton variant={'outline'} className='w-full !font-normal'>
-              <FacebookIcon className='mr-2 h-5 w-5' />
-              Facebook
-            </CustomButton>
-            <CustomButton variant={'outline'} className='w-full !font-normal'>
-              <GoogleIcon className='mr-2 h-5 w-5' />
-              Google
-            </CustomButton>
-          </div>
+          <OAuthButtons />
           <p className='text-center text-sm'>
             Don&apos;t have an account?{' '}
             <Link
@@ -119,7 +108,7 @@ export default function LoginForm() {
             </Link>
           </p>
         </div>
-      </form>
+      </section>
     </main>
   );
 }
