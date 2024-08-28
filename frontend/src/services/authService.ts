@@ -1,10 +1,9 @@
 import { LoginFormData } from '@/schemas/loginSchema';
-import { RegisterFormData } from '@/schemas/registerSchema';
-import { AuthResponse } from '@/types';
+import { AuthResponse, RegisterUser } from '@/types';
 import { api } from '@/lib/api';
 
 export const authService = {
-  register: async (userData: RegisterFormData): Promise<AuthResponse> => {
+  register: async (userData: RegisterUser): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/register', userData);
     return response.data;
   },

@@ -1,10 +1,15 @@
 import CustomButton from '../custom-button';
 import FacebookIcon from '@/components/icons/facebook';
-import { facebookOAuthAction } from '@/action';
+import { signIn } from '@/auth';
 
 export default function FacebookButton() {
   return (
-    <form action={facebookOAuthAction}>
+    <form
+      action={async () => {
+        'use server';
+        await signIn('facebook', { redirectTo: '/' });
+      }}
+    >
       <CustomButton variant={'outline'} className='w-full !font-normal'>
         <FacebookIcon className='mr-2 h-5 w-5' />
         Facebook

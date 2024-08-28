@@ -15,3 +15,10 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface RegisterUser {
+  email: string;
+  password?: string;
+  name: string;
+  image?: string;
+}
