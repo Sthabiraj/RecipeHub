@@ -16,9 +16,8 @@ export interface User {
   updatedAt: Date;
 }
 
-export interface RegisterUser {
+export interface RegisterOAuth {
   email: string;
-  password?: string;
   name: string;
-  image?: string;
+  profileImage: string;
 }

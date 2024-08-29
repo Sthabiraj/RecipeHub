@@ -41,42 +41,29 @@ export default {
     }),
   ],
   callbacks: {
-    // async signIn({ user, account }) {
-    //   if (account?.provider === 'google' || account?.provider === 'facebook') {
-    //     try {
-    //       const existingUser = await userService.getUserByEmail(
-    //         user.email as string
-    //       );
+    async signIn({ user, account }) {
+      if (account?.provider === 'google' || account?.provider === 'facebook') {
+        try {
+          const result = await authService.loginWithOAuth({
+            email: user.email as string,
+            name: user.name as string,
+            profileImage: user.image as string,
+          });
 
-    //       if (!existingUser) {
-    //         const newUser = await authService.register({
-    //           email: user.email as string,
-    //           name: user.name as string,
-    //           image: user.image as string,
-    //         });
-
-    //         if (newUser && newUser.user && newUser.user._id) {
-    //           user.id = newUser.user._id;
-    //         } else {
-    //           console.error('Failed to create new user');
-    //           return false;
-    //         }
-    //       } else {
-    //         await userService.updateUser(existingUser.user?._id as string, {
-    //           name: user.name as string,
-    //           profileImage: user.image as string,
-    //         });
-    //         user.id = existingUser.user?._id;
-    //       }
-
-    //       return true;
-    //     } catch (error) {
-    //       console.error('Error in signIn callback:', error);
-    //       return false;
-    //     }
-    //   }
-    //   return true;
-    // },
+          if (result.success && result.user) {
+            user.id = result.user._id;
+            return true;
+          } else {
+            console.error('Failed to register/retrieve user:', result.message);
+            return false;
+          }
+        } catch (error) {
+          console.error('Error in signIn callback:', error);
+          return false;
+        }
+      }
+      return true;
+    },
     jwt({ token, user }) {
       if (user) {
         // User is available during sign-in
