@@ -18,6 +18,33 @@ const getUserById = async (req: Request<{ id: string }>, res: Response) => {
   }
 };
 
+// Get user by email
+const getUserByEmail = async (
+  req: Request<
+    {},
+    {},
+    {},
+    {
+      email: string;
+    }
+  >,
+  res: Response
+) => {
+  const { email } = req.query;
+  try {
+    const user = await User.findOne({ email }).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching user",
+      error: (error as Error).message,
+    });
+  }
+};
+
 // Update user
 const updateUser = async (req: Request<{ id: string }>, res: Response) => {
   try {
@@ -102,4 +129,4 @@ const changePassword = async (req: Request<{ id: string }>, res: Response) => {
   }
 };
 
-export { getUserById, updateUser, deleteUser, changePassword };
+export { getUserById, getUserByEmail, updateUser, deleteUser, changePassword };
