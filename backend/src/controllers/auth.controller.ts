@@ -115,6 +115,9 @@ export const loginWithOAuth = async (
 
     await user.save();
 
+    // Generate JWT token and send it as a cookie
+    generateTokenAndSendCookie(res, user);
+
     return res.status(201).json({
       success: true,
       message: "User created successfully",
