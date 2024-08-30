@@ -22,6 +22,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { useState } from 'react';
 import { User as IUser } from 'next-auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ThemeButton from './theme-button';
 
 export default function ProfileMenu({ user }: { user: IUser }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,10 +64,7 @@ export default function ProfileMenu({ user }: { user: IUser }) {
           <Settings className='mr-2 h-4 w-4' />
           <span>Settings</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Moon className='mr-2 h-4 w-4' />
-          <span>Dark mode</span>
-        </DropdownMenuItem>
+        <ThemeButton />
         <LogoutButton />
       </DropdownMenuContent>
     </DropdownMenu>
