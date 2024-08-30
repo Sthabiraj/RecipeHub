@@ -10,7 +10,12 @@ interface RegisterInput {
   name: string;
   email: string;
   password: string;
-  profileImage?: string;
+}
+
+interface RegisterOAuthInput {
+  name: string;
+  email: string;
+  profileImage: string;
 }
 
 interface LoginInput {
@@ -32,7 +37,7 @@ export const register = async (
   res: Response<ApiResponse>
 ) => {
   try {
-    const { name, email, password, profileImage } = req.body;
+    const { name, email, password } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -51,9 +56,7 @@ export const register = async (
       name,
       email,
       password: hashedPassword,
-      profileImage:
-        profileImage ||
-        `https://ui-avatars.com/api/?name=${nameToSlug(name)}&background=random&rounded=true`,
+      profileImage: `https://ui-avatars.com/api/?name=${nameToSlug(name)}&background=random&rounded=true`,
     });
 
     await newUser.save();
@@ -75,6 +78,55 @@ export const register = async (
     res.status(500).json({
       success: false,
       message: "Error creating user",
+      error: (error as Error).message,
+    });
+  }
+};
+
+export const loginWithOAuth = async (
+  req: Request<{}, {}, RegisterOAuthInput>,
+  res: Response<ApiResponse>
+) => {
+  try {
+    const { name, email, profileImage } = req.body;
+
+    // Check if user already exists
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // Update existing user's information
+      user.name = name;
+      user.profileImage = profileImage;
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "User information updated",
+        user: user,
+      });
+    }
+
+    // Create new user if not exists
+    user = new User({
+      name,
+      email,
+      profileImage,
+    });
+
+    await user.save();
+
+    // Generate JWT token and send it as a cookie
+    generateTokenAndSendCookie(res, user);
+
+    return res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error processing user",
       error: (error as Error).message,
     });
   }

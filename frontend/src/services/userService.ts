@@ -1,9 +1,13 @@
 import { UserResponse, User } from '@/types';
-import { api } from '@/utils/api';
+import { api } from '@/lib/api';
 
 export const userService = {
   getUser: async (id: string): Promise<UserResponse> => {
     const response = await api.get<UserResponse>(`/user/${id}`);
+    return response.data;
+  },
+  getUserByEmail: async (email: string): Promise<UserResponse> => {
+    const response = await api.get<UserResponse>(`/user?email=${email}`);
     return response.data;
   },
   updateUser: async (

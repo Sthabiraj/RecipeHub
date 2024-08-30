@@ -4,6 +4,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import QueryProvider from '@/providers/query-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from 'next-themes';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -29,7 +30,16 @@ export default function RootLayout({
         )}
         suppressHydrationWarning
       >
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='light'
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>
