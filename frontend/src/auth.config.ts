@@ -36,6 +36,7 @@ export default {
           email: user.email,
           name: user.name,
           image: user.profileImage,
+          role: user.role,
         };
       },
     }),
@@ -71,6 +72,7 @@ export default {
         token.email = user.email;
         token.name = user.name;
         token.picture = user.image;
+        token.role = user.role;
       }
       return token;
     },
@@ -79,6 +81,7 @@ export default {
       session.user.email = token.email as string;
       session.user.name = token.name as string;
       session.user.image = token.picture as string;
+      session.user.role = token.role as string;
       return session;
     },
   },

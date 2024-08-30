@@ -1,23 +1,11 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { api } from '@/lib/api';
 import { RegisterFormData } from '@/schemas/registerSchema';
-
-interface RegisterResponse {
-  success: boolean;
-  message: string;
-  error?: string;
-  user?: any;
-}
+import { authService } from '@/services';
 
 export function useRegister() {
-  return useMutation<RegisterResponse, Error, RegisterFormData>({
-    mutationFn: (userData) =>
-      api
-        .post<RegisterResponse>('/auth/register', userData, {
-          withCredentials: true,
-        })
-        .then((res) => res.data),
+  return useMutation({
+    mutationFn: (userData: RegisterFormData) => authService.register(userData),
   });
 }
