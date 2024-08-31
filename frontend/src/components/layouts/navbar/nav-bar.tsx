@@ -6,7 +6,7 @@ import { Plus } from 'lucide-react';
 
 export default function NavBar() {
   return (
-    <nav className='sticky left-0 right-0 top-0 z-10 flex items-center justify-between px-24 py-4 shadow'>
+    <nav className='sticky left-0 right-0 top-0 z-10 flex items-center justify-between bg-background px-24 py-4 shadow'>
       <div className='flex items-center gap-6'>
         <Link href='/'>
           <h1 className='text-3xl font-bold'>
@@ -32,13 +32,15 @@ export default function NavBar() {
         </div>
       </div>
       <div className='flex items-center gap-4'>
-        <Button
-          variant='ghost'
-          className='flex items-center gap-1 rounded-full text-base'
-        >
-          <Plus className='size-4' />
-          <span>Add a recipe</span>
-        </Button>
+        <Link href='/recipe/add'>
+          <Button
+            variant='ghost'
+            className='flex items-center gap-1 rounded-full text-base'
+          >
+            <Plus className='size-4' />
+            <span>Add a recipe</span>
+          </Button>
+        </Link>
         <NavButtons />
       </div>
     </nav>
