@@ -1,3 +1,4 @@
+import Footer from '@/components/layouts/footer/footer';
 import NavBar from '@/components/layouts/navbar/nav-bar';
 
 export default function UserRootLayout({
@@ -6,9 +7,10 @@ export default function UserRootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className='min-h-screen'>
+    <main className='flex min-h-screen flex-col'>
       <NavBar />
-      {children}
+      <section className='flex-1'>{children}</section>
+      <Footer />
     </main>
   );
 }
