@@ -6,11 +6,11 @@ import { Plus } from 'lucide-react';
 
 export default function NavBar() {
   return (
-    <nav className='sticky left-0 right-0 top-0 z-10 flex items-center justify-between bg-background px-24 py-4 shadow'>
+    <nav className='sticky left-0 right-0 top-0 z-10 flex items-center justify-between border-b bg-background px-24 py-4 shadow'>
       <div className='flex items-center gap-6'>
         <Link href='/'>
           <h1 className='text-3xl font-bold'>
-            Recipe<span className='text-[#407948]'>Hub</span>
+            Recipe<span className='text-primary'>Hub</span>
           </h1>
         </Link>
         <div className='flex gap-4'>
