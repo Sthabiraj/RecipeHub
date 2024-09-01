@@ -124,7 +124,7 @@ export default function Footer() {
           <div className='flex overflow-hidden rounded-full border bg-primary-foreground'>
             <Input
               placeholder='name@domain.com'
-              className='flex-grow rounded-none rounded-l-full text-black'
+              className='flex-grow rounded-none rounded-l-full text-accent-foreground'
             />
             <Button className='rounded-none'>Subscribe</Button>
           </div>
