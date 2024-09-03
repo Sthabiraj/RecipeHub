@@ -18,7 +18,6 @@ export default function AddRecipePage() {
           your recipe and show off your culinary creativity.
         </CardDescription>
       </CardHeader>
-      {/* <Separator /> */}
       <CardContent>
         <AddRecipeForm />
       </CardContent>

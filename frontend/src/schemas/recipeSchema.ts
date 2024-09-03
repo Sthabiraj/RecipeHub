@@ -85,27 +85,23 @@ const recipeSchema = z.object({
       }),
     })
   ),
-  tags: z.array(
-    z
-      .object({
-        cuisine: z.string().refine((value) => value.length > 0, {
-          message: 'Cuisine is required',
-        }),
-        mealType: z.string().refine((value) => value.length > 0, {
-          message: 'Meal type is required',
-        }),
-        dietaryRestrictions: z.string().refine((value) => value.length > 0, {
-          message: 'Dietary restrictions is required',
-        }),
-        cookingMethod: z.string().refine((value) => value.length > 0, {
-          message: 'Cooking method is required',
-        }),
-        mainIngredient: z.string().refine((value) => value.length > 0, {
-          message: 'Main ingredient is required',
-        }),
-      })
-      .optional()
-  ),
+  tags: z.object({
+    cuisine: z.string().refine((value) => value.length > 0, {
+      message: 'Cuisine is required',
+    }),
+    mealType: z.string().refine((value) => value.length > 0, {
+      message: 'Meal type is required',
+    }),
+    dietaryRestrictions: z.string().refine((value) => value.length > 0, {
+      message: 'Dietary restrictions is required',
+    }),
+    cookingMethod: z.string().refine((value) => value.length > 0, {
+      message: 'Cooking method is required',
+    }),
+    mainIngredient: z.string().refine((value) => value.length > 0, {
+      message: 'Main ingredient is required',
+    }),
+  }),
 });
 
 export default recipeSchema;

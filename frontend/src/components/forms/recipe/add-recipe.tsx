@@ -42,8 +42,8 @@ export default function AddRecipeForm() {
         minutes: 0,
       },
       ingredients: [{ quantity: 1, measurement: '', item: '' }],
-      instructions: [],
-      tags: [],
+      instructions: [{ step: 1, instruction: '' }],
+      tags: {},
     },
   });
 
@@ -59,7 +59,7 @@ export default function AddRecipeForm() {
   const {
     fields: instructionFields,
     append: instructionAppend,
-    remove: instruction,
+    remove: instructionRemove,
   } = useFieldArray({
     control: form.control,
     name: 'instructions',
@@ -294,11 +294,177 @@ export default function AddRecipeForm() {
               <FormDescription>
                 Break down your recipe into clear, step-by-step instructions.
               </FormDescription>
-              <FormField />
+              {instructionFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className='mb-4 grid grid-cols-[30px_1fr_30px] items-center gap-4'
+                >
+                  <GripVertical size={24} className='cursor-grab' />
+                  <FormField
+                    control={form.control}
+                    name={`instructions.${index}.instruction`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <p className='text-xs'>Step {index + 1}</p>
+                        <FormControl>
+                          <Textarea
+                            placeholder='Step instructions'
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value)}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type='button'
+                    size='icon'
+                    variant='ghost'
+                    className='text-red-500 hover:text-red-600'
+                    onClick={() => instructionRemove(index)}
+                    disabled={index === 0 && instructionFields.length === 1}
+                  >
+                    <CircleX />
+                  </Button>
+                </div>
+              ))}
+              <Button
+                type='button'
+                className='!mt-4 flex items-center gap-2'
+                onClick={() =>
+                  instructionAppend({
+                    step: instructionFields.length + 1,
+                    instruction: '',
+                  })
+                }
+              >
+                <Plus size={14} />
+                Add Instruction
+              </Button>
               <FormMessage />
             </FormItem>
           )}
         />
+        <Separator />
+        <FormField
+          control={form.control}
+          name='tags'
+          render={() => (
+            <FormItem>
+              <FormLabel>Tags</FormLabel>
+              <div className='space-y-4'>
+                <FormField
+                  control={form.control}
+                  name='tags.cuisine'
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Cuisine' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='American'>American</SelectItem>
+                        <SelectItem value='Chinese'>Chinese</SelectItem>
+                        <SelectItem value='Indian'>Indian</SelectItem>
+                        <SelectItem value='Italian'>Italian</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='tags.mealType'
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Meal Type' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='Breakfast'>Breakfast</SelectItem>
+                        <SelectItem value='Lunch'>Lunch</SelectItem>
+                        <SelectItem value='Dinner'>Dinner</SelectItem>
+                        <SelectItem value='Snack'>Snack</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='tags.dietaryRestrictions'
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Dietary Restrictions' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='Vegetarian'>Vegetarian</SelectItem>
+                        <SelectItem value='Vegan'>Vegan</SelectItem>
+                        <SelectItem value='Gluten-Free'>Gluten-Free</SelectItem>
+                        <SelectItem value='Dairy-Free'>Dairy-Free</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='tags.cookingMethod'
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Cooking Method' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='Bake'>Bake</SelectItem>
+                        <SelectItem value='Boil'>Boil</SelectItem>
+                        <SelectItem value='Fry'>Fry</SelectItem>
+                        <SelectItem value='Grill'>Grill</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='tags.mainIngredient'
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Main Ingredient' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='Chicken'>Chicken</SelectItem>
+                        <SelectItem value='Beef'>Beef</SelectItem>
+                        <SelectItem value='Pork'>Pork</SelectItem>
+                        <SelectItem value='Fish'>Fish</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className='flex justify-end gap-4'>
+          <Button variant='outline'>Cancel</Button>
+          <Button>Submit Recipe</Button>
+        </div>
+        <Separator />
+        <FormDescription>
+          If you&rsquo;ve come across this recipe in a magazine, cookbook, or on
+          another website, we&rsquo;re unable to publish it here. Our platform
+          thrives on originality, and published recipes must adhere to our Terms
+          of Service. Let&rsquo;s keep the kitchen creativity flowing with your
+          unique recipes.
+        </FormDescription>
       </form>
     </Form>
   );
