@@ -24,23 +24,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import ImageInput from '@/components/inputs/image-input';
 
 export default function AddRecipeForm() {
   const form = useForm<RecipeFormData>({
     resolver: zodResolver(recipeSchema),
     defaultValues: {
-      coverImage: '',
-      title: '',
-      description: '',
-      servings: 0,
-      prepTime: {
-        hours: 0,
-        minutes: 0,
-      },
-      cookTime: {
-        hours: 0,
-        minutes: 0,
-      },
+      // coverImage: '',
+      // title: '',
+      // description: '',
+      // servings: 0,
+      // prepTime: {
+      //   hours: 0,
+      //   minutes: 0,
+      // },
+      // cookTime: {
+      //   hours: 0,
+      //   minutes: 0,
+      // },
       ingredients: [{ quantity: 1, measurement: '', item: '' }],
       instructions: [{ step: 1, instruction: '' }],
       tags: {},
@@ -74,6 +75,11 @@ export default function AddRecipeForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
         <Separator />
+        <FormField
+          control={form.control}
+          name='coverImage'
+          render={({ field }) => <ImageInput field={field} />}
+        />
         <FormField
           control={form.control}
           name='title'
@@ -305,10 +311,10 @@ export default function AddRecipeForm() {
                     name={`instructions.${index}.instruction`}
                     render={({ field }) => (
                       <FormItem>
-                        <p className='text-xs'>Step {index + 1}</p>
+                        {/* <p className='text-xs'>Step {index + 1}</p> */}
                         <FormControl>
                           <Textarea
-                            placeholder='Step instructions'
+                            placeholder={`Step ${index + 1}`}
                             {...field}
                             onChange={(e) => field.onChange(e.target.value)}
                           />
@@ -352,7 +358,7 @@ export default function AddRecipeForm() {
           render={() => (
             <FormItem>
               <FormLabel>Tags</FormLabel>
-              <div className='space-y-4'>
+              <div className='grid grid-cols-3 items-center gap-4'>
                 <FormField
                   control={form.control}
                   name='tags.cuisine'

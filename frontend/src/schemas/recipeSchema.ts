@@ -1,74 +1,53 @@
 import { z } from 'zod';
 
+// Custom refinement function to check if value is a File
+const isFile = (value: any): value is File => value instanceof File;
+
 const recipeSchema = z.object({
   coverImage: z
-    .string()
-    .url()
-    .refine((value) => value.length > 0, {
-      message: 'Cover image URL is required',
+    .union([
+      z.custom<File>(isFile, {
+        message: 'Cover image must be a file',
+      }),
+      z.string().url({
+        message: 'Cover image must be a valid URL when not a file',
+      }),
+    ])
+    .refine((value) => value !== null && value !== undefined, {
+      message: 'Cover image is required',
     }),
-  title: z.string().refine((value) => value.length > 0, {
-    message: 'Title is required',
-  }),
-  description: z.string().refine((value) => value.length > 0, {
-    message: 'Description is required',
-  }),
-  servings: z
-    .number()
-    .int()
-    .positive()
-    .refine((value) => value > 0, {
-      message: 'Servings must be a positive number',
-    }),
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  servings: z.number().int().positive('Servings must be a positive number'),
   prepTime: z.object({
     hours: z
       .number()
       .int()
-      .nonnegative()
-      .refine((value) => value >= 0, {
-        message: 'Prep time hours must be a non-negative number',
-      }),
+      .nonnegative('Prep time hours must be a non-negative number'),
     minutes: z
       .number()
       .int()
       .min(0)
-      .max(59)
-      .refine((value) => value >= 0 && value <= 59, {
-        message: 'Prep time minutes must be between 0 and 59',
-      }),
+      .max(59, 'Prep time minutes must be between 0 and 59'),
   }),
   cookTime: z.object({
     hours: z
       .number()
       .int()
-      .nonnegative()
-      .refine((value) => value >= 0, {
-        message: 'Cook time hours must be a non-negative number',
-      }),
+      .nonnegative('Cook time hours must be a non-negative number'),
     minutes: z
       .number()
       .int()
       .min(0)
-      .max(59)
-      .refine((value) => value >= 0 && value <= 59, {
-        message: 'Cook time minutes must be between 0 and 59',
-      }),
+      .max(59, 'Cook time minutes must be between 0 and 59'),
   }),
   ingredients: z.array(
     z.object({
       quantity: z
         .number()
-        .int()
-        .positive()
-        .refine((value) => value > 0, {
-          message: 'Ingredient quantity must be a positive number',
-        }),
-      measurement: z.string().refine((value) => value.length > 0, {
-        message: 'Ingredient measurement is required',
-      }),
-      item: z.string().refine((value) => value.length > 0, {
-        message: 'Ingredient item is required',
-      }),
+        .positive('Ingredient quantity must be a positive number'),
+      measurement: z.string().min(1, 'Ingredient measurement is required'),
+      item: z.string().min(1, 'Ingredient item is required'),
     })
   ),
   instructions: z.array(
@@ -76,31 +55,16 @@ const recipeSchema = z.object({
       step: z
         .number()
         .int()
-        .positive()
-        .refine((value) => value > 0, {
-          message: 'Instruction step must be a positive number',
-        }),
-      instruction: z.string().refine((value) => value.length > 0, {
-        message: 'Instruction is required',
-      }),
+        .positive('Instruction step must be a positive number'),
+      instruction: z.string().min(1, 'Instruction is required'),
     })
   ),
   tags: z.object({
-    cuisine: z.string().refine((value) => value.length > 0, {
-      message: 'Cuisine is required',
-    }),
-    mealType: z.string().refine((value) => value.length > 0, {
-      message: 'Meal type is required',
-    }),
-    dietaryRestrictions: z.string().refine((value) => value.length > 0, {
-      message: 'Dietary restrictions is required',
-    }),
-    cookingMethod: z.string().refine((value) => value.length > 0, {
-      message: 'Cooking method is required',
-    }),
-    mainIngredient: z.string().refine((value) => value.length > 0, {
-      message: 'Main ingredient is required',
-    }),
+    cuisine: z.string().optional(),
+    mealType: z.string().optional(),
+    dietaryRestrictions: z.string().optional(),
+    cookingMethod: z.string().optional(),
+    mainIngredient: z.string().optional(),
   }),
 });
 
