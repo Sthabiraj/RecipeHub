@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { RecipeFormData } from '@/schemas/recipeSchema';
-import { ControllerRenderProps } from 'react-hook-form';
-import { FormItem, FormMessage } from '../ui/form';
+import { ControllerRenderProps, UseFormReturn } from 'react-hook-form';
+import { FormItem } from '../ui/form';
 import { Button } from '../ui/button';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -9,8 +9,10 @@ import { cn } from '@/lib/utils';
 
 export default function ImageInput({
   field,
+  form,
 }: {
   field: ControllerRenderProps<RecipeFormData>;
+  form: UseFormReturn<RecipeFormData>;
 }) {
   const [preview, setPreview] = React.useState<string | null>(null);
 
@@ -42,7 +44,9 @@ export default function ImageInput({
       <div
         className={cn(
           'relative flex flex-col items-center justify-center overflow-hidden rounded-md border-2 border-dashed border-foreground/40 bg-primary/10',
-          preview ? 'h-80' : 'h-36'
+          preview ? 'h-80' : 'h-36',
+          form.formState.errors.coverImage &&
+            'border-destructive/40 bg-destructive/10'
         )}
       >
         {preview ? (
@@ -70,13 +74,22 @@ export default function ImageInput({
               type='button'
               className='mb-2 rounded-full'
               onClick={() => document.getElementById('fileInput')?.click()}
+              {...(form.formState.errors.coverImage && {
+                variant: 'destructive',
+              })}
             >
               <Upload className='mr-2 size-6' />
               Upload Cover Image
             </Button>
-            <p className='text-sm text-foreground/60'>
-              Recommended size: 1200x800 px
-            </p>
+            {form.formState.errors.coverImage ? (
+              <p className='text-sm text-destructive'>
+                {form.formState.errors.coverImage.message}
+              </p>
+            ) : (
+              <p className='text-sm text-foreground/60'>
+                Recommended size: 1200x800 px
+              </p>
+            )}
           </div>
         )}
         <input
@@ -87,7 +100,6 @@ export default function ImageInput({
           onChange={handleFileSelect}
         />
       </div>
-      <FormMessage />
     </FormItem>
   );
 }
