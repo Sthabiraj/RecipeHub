@@ -22,8 +22,13 @@ import InstructionsField from './fields/instructions/instructions-field';
 import PrepTimeField from './fields/prep-time/prep-time-field';
 import CookTimeField from './fields/cook-time/cook-time-field';
 import TagsField from './fields/tags/tags-field';
+import AlertButton from '@/components/buttons/alert-button';
+import { useRouter } from 'next/navigation';
+import sampleRecipeData from '@/data/sampleRecipeData';
 
 export default function AddRecipeForm() {
+  const router = useRouter();
+
   const form = useForm<RecipeFormData>({
     resolver: zodResolver(recipeSchema),
     defaultValues: {
@@ -42,6 +47,7 @@ export default function AddRecipeForm() {
       ingredients: [{ quantity: 1, measurement: '', item: '' }],
       instructions: [{ step: 1, instruction: '' }],
       tags: [],
+      // ...sampleRecipeData,
     },
   });
 
@@ -130,7 +136,18 @@ export default function AddRecipeForm() {
         <Separator />
         <TagsField form={form} />
         <div className='flex justify-end gap-4'>
-          <Button variant='outline'>Cancel</Button>
+          <AlertButton
+            variant='outline'
+            alertTitle='Cancel Recipe Submission'
+            alertDescription='Are you sure you want to cancel your recipe submission?'
+            onContinue={() => {
+              // Handle cancel action
+              form.reset();
+              router.push('/');
+            }}
+          >
+            Cancel
+          </AlertButton>
           <Button>Submit Recipe</Button>
         </div>
         <Separator />

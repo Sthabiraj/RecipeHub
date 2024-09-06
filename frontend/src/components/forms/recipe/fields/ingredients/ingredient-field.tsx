@@ -97,24 +97,13 @@ const IngredientField = ({
           control={form.control}
           name={`ingredients.${index}.measurement`}
           render={({ field }) => (
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl>
-                <SelectTrigger
-                  className={cn(
-                    form.formState.errors.ingredients?.[index]?.measurement &&
-                      'border-destructive/40 bg-destructive/10 text-destructive/90 focus-visible:ring-destructive'
-                  )}
-                >
-                  <SelectValue placeholder='Measurement' />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value='(none)'>(none)</SelectItem>
-                <SelectItem value='cups'>cups</SelectItem>
-                <SelectItem value='dash'>dash</SelectItem>
-                <SelectItem value='grams (g)'>grams (g)</SelectItem>
-              </SelectContent>
-            </Select>
+            <FormControl>
+              <Input
+                placeholder='Measurement'
+                {...field}
+                error={form.formState.errors.ingredients?.[index]?.measurement}
+              />
+            </FormControl>
           )}
         />
         <FormField
