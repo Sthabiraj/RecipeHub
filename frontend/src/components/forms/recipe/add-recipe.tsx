@@ -41,19 +41,14 @@ export default function AddRecipeForm() {
       },
       ingredients: [{ quantity: 1, measurement: '', item: '' }],
       instructions: [{ step: 1, instruction: '' }],
-      tags: {
-        cuisine: '',
-        mealType: '',
-        dietaryRestrictions: '',
-        cookingMethod: '',
-        mainIngredient: '',
-      },
+      tags: [],
     },
   });
 
   function onSubmit(data: RecipeFormData) {
     console.log(data);
     // Handle form submission
+    form.reset();
   }
 
   return (

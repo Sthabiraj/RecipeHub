@@ -59,13 +59,7 @@ const recipeSchema = z.object({
       instruction: z.string().min(1, 'Instruction is required'),
     })
   ),
-  tags: z.object({
-    cuisine: z.string().optional(),
-    mealType: z.string().optional(),
-    dietaryRestrictions: z.string().optional(),
-    cookingMethod: z.string().optional(),
-    mainIngredient: z.string().optional(),
-  }),
+  tags: z.array(z.string()),
 });
 
 export default recipeSchema;
