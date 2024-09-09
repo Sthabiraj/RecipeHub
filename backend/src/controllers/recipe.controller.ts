@@ -12,13 +12,7 @@ interface CreateRecipeInput {
   cookTime: { hours: number; minutes: number };
   ingredients: Array<{ quantity: number; measurement: string; item: string }>;
   instructions: Array<{ step: number; instruction: string }>;
-  tags: {
-    cuisine?: string;
-    mealType?: string;
-    dietaryRestrictions?: string;
-    cookingMethod?: string;
-    mainIngredient?: string;
-  };
+  tags: string[];
 }
 
 // Type for updating a recipe
@@ -26,7 +20,7 @@ interface UpdateRecipeInput
   extends Partial<Omit<CreateRecipeInput, "creator">> {}
 
 // Create a new recipe
-const createRecipe = async (
+export const createRecipe = async (
   req: Request<{}, {}, CreateRecipeInput>,
   res: Response
 ) => {
@@ -55,7 +49,10 @@ const createRecipe = async (
 };
 
 // Get recipe by ID
-const getRecipeById = async (req: Request<{ id: string }>, res: Response) => {
+export const getRecipeById = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
   try {
     const recipe = await Recipe.findById(req.params.id).populate(
       "creator",
@@ -74,7 +71,7 @@ const getRecipeById = async (req: Request<{ id: string }>, res: Response) => {
 };
 
 // Update recipe
-const updateRecipe = async (
+export const updateRecipe = async (
   req: Request<{ id: string }, {}, UpdateRecipeInput>,
   res: Response
 ) => {
@@ -102,7 +99,10 @@ const updateRecipe = async (
 };
 
 // Delete recipe
-const deleteRecipe = async (req: Request<{ id: string }>, res: Response) => {
+export const deleteRecipe = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
   try {
     const recipe = await Recipe.findByIdAndDelete(req.params.id);
     if (!recipe) {
@@ -118,7 +118,7 @@ const deleteRecipe = async (req: Request<{ id: string }>, res: Response) => {
 };
 
 // Get all recipe (with pagination and optional filtering)
-const getAllRecipes = async (
+export const getAllRecipes = async (
   req: Request<
     {},
     {},
@@ -161,12 +161,4 @@ const getAllRecipes = async (
       error: (error as Error).message,
     });
   }
-};
-
-export {
-  createRecipe,
-  getRecipeById,
-  updateRecipe,
-  deleteRecipe,
-  getAllRecipes,
 };
