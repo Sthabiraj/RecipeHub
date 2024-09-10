@@ -4,7 +4,7 @@ import { IRecipe } from "../types";
 const recipeSchema = new Schema<IRecipe>(
   {
     creator: {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },

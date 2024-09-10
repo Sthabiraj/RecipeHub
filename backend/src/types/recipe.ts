@@ -1,6 +1,8 @@
+import { ObjectId } from "mongoose";
+
 export interface IRecipe {
   _id?: string;
-  creator: string;
+  creator: ObjectId;
   coverImage: string;
   title: string;
   description: string;

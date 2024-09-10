@@ -5,6 +5,9 @@ const nextConfig = {
       {
         hostname: 'images.pexels.com',
       },
+      {
+        hostname: 'utfs.io',
+      },
     ],
   },
 };

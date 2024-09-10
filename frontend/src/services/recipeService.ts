@@ -1,8 +1,8 @@
-import { RecipeResponse, Recipe } from '@/types';
+import { RecipeResponse, Recipe, CreateRecipeInput } from '@/types';
 import { api } from '@/lib/api';
 
 export const recipeService = {
-  createRecipe: async (recipeData: Recipe) => {
+  createRecipe: async (recipeData: CreateRecipeInput) => {
     const response = await api.post<RecipeResponse>('/recipe', recipeData);
     return response.data;
   },

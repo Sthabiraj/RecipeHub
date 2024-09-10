@@ -28,36 +28,38 @@ import { createRecipeAction } from '@/action';
 import { useUploadThing } from '@/hooks/useUploadThing';
 import sampleRecipeData from '@/data/sampleRecipeData';
 import { toast } from 'sonner';
-import { useFormStatus } from 'react-dom';
+import { useState } from 'react';
 
 export default function AddRecipeForm() {
   const router = useRouter();
   const { startUpload } = useUploadThing('imageUploader');
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<RecipeFormData>({
     resolver: zodResolver(recipeSchema),
     defaultValues: {
-      // coverImage: '', // This will be updated when an image is selected
-      // title: '',
-      // description: '',
-      // servings: 1, // Set a default value of 1
-      // prepTime: {
-      //   hours: 0,
-      //   minutes: 0,
-      // },
-      // cookTime: {
-      //   hours: 0,
-      //   minutes: 0,
-      // },
-      // ingredients: [{ quantity: 1, measurement: '', item: '' }],
-      // instructions: [{ step: 1, instruction: '' }],
-      // tags: [],
-      ...sampleRecipeData,
+      coverImage: '', // This will be updated when an image is selected
+      title: '',
+      description: '',
+      servings: 1, // Set a default value of 1
+      prepTime: {
+        hours: 0,
+        minutes: 0,
+      },
+      cookTime: {
+        hours: 0,
+        minutes: 0,
+      },
+      ingredients: [{ quantity: 1, measurement: '', item: '' }],
+      instructions: [{ step: 1, instruction: '' }],
+      tags: [],
+      // ...sampleRecipeData,
     },
   });
 
   const onSubmit = async (data: RecipeFormData) => {
     try {
+      setIsLoading(true);
       let imageUrl = typeof data.coverImage === 'string' ? data.coverImage : '';
 
       // If coverImage is a File, upload it first
@@ -86,6 +88,8 @@ export default function AddRecipeForm() {
     } catch (error) {
       console.error('Error submitting form:', error);
       toast.error('Failed to submit recipe. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -180,7 +184,9 @@ export default function AddRecipeForm() {
           >
             Cancel
           </AlertButton>
-          <SubmitButton />
+          <Button type='submit' aria-disabled={isLoading}>
+            {isLoading ? 'Submitting...' : 'Submit Recipe'}
+          </Button>
         </div>
         <Separator />
         <FormDescription>
@@ -194,12 +200,3 @@ export default function AddRecipeForm() {
     </Form>
   );
 }
-
-const SubmitButton = () => {
-  const { pending } = useFormStatus();
-  return (
-    <Button type='submit' aria-disabled={pending}>
-      {pending ? 'Submitting...' : 'Submit Recipe'}
-    </Button>
-  );
-};
