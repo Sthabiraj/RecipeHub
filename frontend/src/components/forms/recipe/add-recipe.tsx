@@ -22,8 +22,19 @@ import InstructionsField from './fields/instructions/instructions-field';
 import PrepTimeField from './fields/prep-time/prep-time-field';
 import CookTimeField from './fields/cook-time/cook-time-field';
 import TagsField from './fields/tags/tags-field';
+import AlertButton from '@/components/buttons/alert-button';
+import { useRouter } from 'next/navigation';
+import { createRecipeAction } from '@/action';
+import { useUploadThing } from '@/hooks/useUploadThing';
+import sampleRecipeData from '@/data/sampleRecipeData';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 export default function AddRecipeForm() {
+  const router = useRouter();
+  const { startUpload } = useUploadThing('imageUploader');
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<RecipeFormData>({
     resolver: zodResolver(recipeSchema),
     defaultValues: {
@@ -41,20 +52,46 @@ export default function AddRecipeForm() {
       },
       ingredients: [{ quantity: 1, measurement: '', item: '' }],
       instructions: [{ step: 1, instruction: '' }],
-      tags: {
-        cuisine: '',
-        mealType: '',
-        dietaryRestrictions: '',
-        cookingMethod: '',
-        mainIngredient: '',
-      },
+      tags: [],
+      // ...sampleRecipeData,
     },
   });
 
-  function onSubmit(data: RecipeFormData) {
-    console.log(data);
-    // Handle form submission
-  }
+  const onSubmit = async (data: RecipeFormData) => {
+    try {
+      setIsLoading(true);
+      let imageUrl = typeof data.coverImage === 'string' ? data.coverImage : '';
+
+      // If coverImage is a File, upload it first
+      if (data.coverImage instanceof File) {
+        const uploadResult = await startUpload([data.coverImage]);
+        if (uploadResult && uploadResult[0]) {
+          imageUrl = uploadResult[0].url;
+        } else {
+          throw new Error('Failed to upload image');
+        }
+      }
+
+      // Call the server action to create the recipe
+      const result = await createRecipeAction({
+        ...data,
+        coverImage: imageUrl,
+      });
+
+      if (result.success) {
+        form.reset();
+        toast.success('Recipe submitted successfully');
+        router.push(`/recipe/${result.data._id}`);
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to submit recipe. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -135,8 +172,21 @@ export default function AddRecipeForm() {
         <Separator />
         <TagsField form={form} />
         <div className='flex justify-end gap-4'>
-          <Button variant='outline'>Cancel</Button>
-          <Button>Submit Recipe</Button>
+          <AlertButton
+            variant='outline'
+            alertTitle='Cancel Recipe Submission'
+            alertDescription='Are you sure you want to cancel your recipe submission?'
+            onContinue={() => {
+              // Handle cancel action
+              form.reset();
+              router.push('/');
+            }}
+          >
+            Cancel
+          </AlertButton>
+          <Button type='submit' aria-disabled={isLoading}>
+            {isLoading ? 'Submitting...' : 'Submit Recipe'}
+          </Button>
         </div>
         <Separator />
         <FormDescription>

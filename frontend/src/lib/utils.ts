@@ -11,3 +11,11 @@ export function getInitials(name: string) {
     .map((word) => word.charAt(0))
     .join('');
 }
+
+export function formatDate(date: Date) {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}

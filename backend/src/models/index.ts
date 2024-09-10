@@ -1,4 +1,4 @@
-import Recipe from "./recipeSchema";
+import Recipe from "./recipe.model";
 import Review from "./reviewSchema";
 import User from "./user.model";
 

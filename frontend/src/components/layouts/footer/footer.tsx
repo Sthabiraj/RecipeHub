@@ -1,7 +1,7 @@
 import React from 'react';
 import FacebookIcon from '@/components/icons/facebook';
 import InstagramIcon from '@/components/icons/instagram';
-import PrintestIcon from '@/components/icons/printest';
+import PrintestIcon from '@/components/icons/pintrest';
 import XIcon from '@/components/icons/x';
 import YoutubeIcon from '@/components/icons/youtube';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -38,7 +38,7 @@ const socialLinks: SocialLink[] = [
   {
     name: 'Facebook',
     href: 'https://facebook.com',
-    icon: <FacebookIcon height={25} width={25} />,
+    icon: <FacebookIcon height={25} width={25} variant='dynamic' />,
   },
   {
     name: 'Instagram',
@@ -48,7 +48,7 @@ const socialLinks: SocialLink[] = [
   {
     name: 'Pinterest',
     href: 'https://pinterest.com',
-    icon: <PrintestIcon height={25} width={25} />,
+    icon: <PrintestIcon height={25} width={25} variant='dynamic' />,
   },
   {
     name: 'Youtube',
@@ -58,7 +58,7 @@ const socialLinks: SocialLink[] = [
   {
     name: 'X',
     href: 'https://x.com',
-    icon: <XIcon height={24} width={24} />,
+    icon: <XIcon height={24} width={24} variant='dynamic' />,
   },
 ];
 

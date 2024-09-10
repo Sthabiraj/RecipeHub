@@ -1,34 +1,16 @@
 import { Request, Response } from "express";
 import { Recipe, User } from "../models";
-
-// Type for creating a new recipe
-interface CreateRecipeInput {
-  creator: string; // User ID
-  title: string;
-  description: string;
-  coverImage: string;
-  servings: number;
-  prepTime: { hours: number; minutes: number };
-  cookTime: { hours: number; minutes: number };
-  ingredients: Array<{ quantity: number; measurement: string; item: string }>;
-  instructions: Array<{ step: number; instruction: string }>;
-  tags: {
-    cuisine?: string;
-    mealType?: string;
-    dietaryRestrictions?: string;
-    cookingMethod?: string;
-    mainIngredient?: string;
-  };
-}
-
-// Type for updating a recipe
-interface UpdateRecipeInput
-  extends Partial<Omit<CreateRecipeInput, "creator">> {}
+import {
+  ApiResponse,
+  CreateRecipeInput,
+  IRecipe,
+  UpdateRecipeInput,
+} from "../types";
 
 // Create a new recipe
-const createRecipe = async (
+export const createRecipe = async (
   req: Request<{}, {}, CreateRecipeInput>,
-  res: Response
+  res: Response<ApiResponse<IRecipe>>
 ) => {
   try {
     const recipe = req.body;
@@ -36,47 +18,60 @@ const createRecipe = async (
     // Check if the user exists
     const user = await User.findById(recipe.creator);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
     }
 
     const newRecipe = await Recipe.create(recipe);
 
     await newRecipe.save();
 
-    return res
-      .status(201)
-      .json({ message: "Recipe created", recipe: newRecipe });
+    return res.status(201).json({
+      success: true,
+      data: newRecipe,
+    });
   } catch (error) {
     return res.status(500).json({
-      message: "Error creating recipe",
-      error: (error as Error).message,
+      success: false,
+      error: "Error creating recipe",
     });
   }
 };
 
 // Get recipe by ID
-const getRecipeById = async (req: Request<{ id: string }>, res: Response) => {
+export const getRecipeById = async (
+  req: Request<{ id: string }>,
+  res: Response<ApiResponse<IRecipe>>
+) => {
   try {
     const recipe = await Recipe.findById(req.params.id).populate(
       "creator",
       "name email"
     );
     if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
+      return res.status(404).json({
+        success: false,
+        error: "Recipe not found",
+      });
     }
-    res.json(recipe);
+    res.json({
+      success: true,
+      data: recipe,
+    });
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching recipe",
-      error: (error as Error).message,
+      success: false,
+      error: "Error fetching recipe",
     });
   }
 };
 
 // Update recipe
-const updateRecipe = async (
+export const updateRecipe = async (
   req: Request<{ id: string }, {}, UpdateRecipeInput>,
-  res: Response
+  res: Response<ApiResponse<IRecipe>>
 ) => {
   try {
     const newRecipe = req.body;
@@ -84,7 +79,10 @@ const updateRecipe = async (
     // Check if the recipe exists
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
+      return res.status(404).json({
+        success: false,
+        error: "Recipe not found",
+      });
     }
 
     // Update fields
@@ -92,40 +90,51 @@ const updateRecipe = async (
 
     await recipe.save();
 
-    return res.json({ message: "Recipe updated sucessfully", recipe });
+    return res.json({
+      success: true,
+      data: recipe,
+    });
   } catch (error) {
     return res.status(500).json({
-      message: "Error updating recipe",
-      error: (error as Error).message,
+      success: false,
+      error: "Error updating recipe",
     });
   }
 };
 
 // Delete recipe
-const deleteRecipe = async (req: Request<{ id: string }>, res: Response) => {
+export const deleteRecipe = async (
+  req: Request<{ id: string }>,
+  res: Response<ApiResponse<null>>
+) => {
   try {
     const recipe = await Recipe.findByIdAndDelete(req.params.id);
     if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
+      return res.status(404).json({
+        success: false,
+        error: "Recipe not found",
+      });
     }
-    res.json({ message: "Recipe deleted successfully" });
+    res.json({
+      success: true,
+      data: null,
+    });
   } catch (error) {
     res.status(500).json({
-      message: "Error deleting recipe",
-      error: (error as Error).message,
+      success: false,
+      error: "Error deleting recipe",
     });
   }
 };
 
-// Get all recipe (with pagination and optional filtering)
-const getAllRecipes = async (
+export const getAllRecipes = async (
   req: Request<
     {},
     {},
     {},
     { page?: string; limit?: string; creator?: string; tag?: string }
   >,
-  res: Response
+  res: Response<ApiResponse<IRecipe[]>>
 ) => {
   try {
     const page = parseInt(req.query.page || "1");
@@ -150,23 +159,16 @@ const getAllRecipes = async (
     const total = await Recipe.countDocuments(query);
 
     res.json({
-      recipes,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-      totalRecipes: total,
+      success: true,
+      data: recipes,
+      // currentPage: page,
+      // totalPages: Math.ceil(total / limit),
+      // totalRecipes: total,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching recipes",
-      error: (error as Error).message,
+      success: false,
+      error: "Error fetching recipes",
     });
   }
-};
-
-export {
-  createRecipe,
-  getRecipeById,
-  updateRecipe,
-  deleteRecipe,
-  getAllRecipes,
 };
