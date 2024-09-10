@@ -1,38 +1,10 @@
-import { model, Schema, Types } from "mongoose";
-
-export interface IRecipe {
-  _id: string;
-  creator: Types.ObjectId;
-  coverImage: string;
-  title: string;
-  description: string;
-  servings: number;
-  prepTime: {
-    hours: number;
-    minutes: number;
-  };
-  cookTime: {
-    hours: number;
-    minutes: number;
-  };
-  ingredients: {
-    quantity: number;
-    measurement: string;
-    item: string;
-  }[];
-  instructions: {
-    step: number;
-    instruction: string;
-  }[];
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { model, Schema } from "mongoose";
+import { IRecipe } from "../types";
 
 const recipeSchema = new Schema<IRecipe>(
   {
     creator: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
