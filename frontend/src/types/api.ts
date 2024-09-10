@@ -14,9 +14,9 @@ export interface UserResponse extends ApiResponse {
   user?: User;
 }
 
-export interface RecipeResponse extends ApiResponse {
-  recipe?: Recipe;
-}
+export type RecipeResponse =
+  | { success: true; data: Recipe }
+  | { success: false; error: string };
 
 export interface ReviewResponse extends ApiResponse {
   review?: Review;

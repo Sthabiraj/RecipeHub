@@ -24,38 +24,70 @@ import CookTimeField from './fields/cook-time/cook-time-field';
 import TagsField from './fields/tags/tags-field';
 import AlertButton from '@/components/buttons/alert-button';
 import { useRouter } from 'next/navigation';
+import { createRecipeAction } from '@/action';
+import { useUploadThing } from '@/hooks/useUploadThing';
 import sampleRecipeData from '@/data/sampleRecipeData';
+import { toast } from 'sonner';
+import { useFormStatus } from 'react-dom';
 
 export default function AddRecipeForm() {
   const router = useRouter();
+  const { startUpload } = useUploadThing('imageUploader');
 
   const form = useForm<RecipeFormData>({
     resolver: zodResolver(recipeSchema),
     defaultValues: {
-      coverImage: '', // This will be updated when an image is selected
-      title: '',
-      description: '',
-      servings: 1, // Set a default value of 1
-      prepTime: {
-        hours: 0,
-        minutes: 0,
-      },
-      cookTime: {
-        hours: 0,
-        minutes: 0,
-      },
-      ingredients: [{ quantity: 1, measurement: '', item: '' }],
-      instructions: [{ step: 1, instruction: '' }],
-      tags: [],
-      // ...sampleRecipeData,
+      // coverImage: '', // This will be updated when an image is selected
+      // title: '',
+      // description: '',
+      // servings: 1, // Set a default value of 1
+      // prepTime: {
+      //   hours: 0,
+      //   minutes: 0,
+      // },
+      // cookTime: {
+      //   hours: 0,
+      //   minutes: 0,
+      // },
+      // ingredients: [{ quantity: 1, measurement: '', item: '' }],
+      // instructions: [{ step: 1, instruction: '' }],
+      // tags: [],
+      ...sampleRecipeData,
     },
   });
 
-  function onSubmit(data: RecipeFormData) {
-    console.log(data);
-    // Handle form submission
-    form.reset();
-  }
+  const onSubmit = async (data: RecipeFormData) => {
+    try {
+      let imageUrl = typeof data.coverImage === 'string' ? data.coverImage : '';
+
+      // If coverImage is a File, upload it first
+      if (data.coverImage instanceof File) {
+        const uploadResult = await startUpload([data.coverImage]);
+        if (uploadResult && uploadResult[0]) {
+          imageUrl = uploadResult[0].url;
+        } else {
+          throw new Error('Failed to upload image');
+        }
+      }
+
+      // Call the server action to create the recipe
+      const result = await createRecipeAction({
+        ...data,
+        coverImage: imageUrl,
+      });
+
+      if (result.success) {
+        form.reset();
+        toast.success('Recipe submitted successfully');
+        router.push(`/recipe/${result.data._id}`);
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to submit recipe. Please try again.');
+    }
+  };
 
   return (
     <Form {...form}>
@@ -148,7 +180,7 @@ export default function AddRecipeForm() {
           >
             Cancel
           </AlertButton>
-          <Button>Submit Recipe</Button>
+          <SubmitButton />
         </div>
         <Separator />
         <FormDescription>
@@ -162,3 +194,12 @@ export default function AddRecipeForm() {
     </Form>
   );
 }
+
+const SubmitButton = () => {
+  const { pending } = useFormStatus();
+  return (
+    <Button type='submit' aria-disabled={pending}>
+      {pending ? 'Submitting...' : 'Submit Recipe'}
+    </Button>
+  );
+};
