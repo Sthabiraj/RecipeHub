@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function RegisterPage() {
   return (
-    <section className='flex min-h-screen items-center justify-center bg-white px-8 py-8 lg:rounded-l-3xl'>
+    <section className='flex min-h-screen items-center justify-center bg-background px-8 py-8 lg:rounded-l-3xl'>
       <div className='w-full max-w-lg space-y-6'>
         <h1 className='text-2xl font-semibold sm:text-3xl'>
           Create an Account
@@ -22,10 +22,7 @@ export default function RegisterPage() {
           Already have an account?{' '}
           <Link
             href='/login'
-            className={cn(
-              buttonVariants({ variant: 'link' }),
-              'p-0 text-[#2E5834]'
-            )}
+            className={cn(buttonVariants({ variant: 'link' }), 'p-0')}
           >
             Log In
           </Link>

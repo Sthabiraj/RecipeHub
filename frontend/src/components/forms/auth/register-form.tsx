@@ -61,7 +61,7 @@ export default function RegisterForm() {
         error={errors.password}
       />
       <CustomButton
-        className='disabled:bg- mt-2 w-full bg-[#2E5834] hover:bg-[#2E5834]/90 disabled:opacity-50'
+        className='mt-2 w-full'
         type='submit'
         isLoading={registerMutation.isPending}
         loadingText='Creating Account...'
