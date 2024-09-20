@@ -12,6 +12,8 @@ export interface Recipe {
   ingredients: Array<{ quantity: number; measurement: string; item: string }>;
   instructions: Array<{ step: number; instruction: string }>;
   tags: string[];
+  averageRating: number;
+  reviewCount: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

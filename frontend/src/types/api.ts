@@ -18,6 +18,6 @@ export type RecipeResponse =
   | { success: true; data: Recipe }
   | { success: false; error: string };
 
-export interface ReviewResponse extends ApiResponse {
-  review?: Review;
-}
+export type ReviewResponse =
+  | { success: true; data: Review }
+  | { success: false; error: string };

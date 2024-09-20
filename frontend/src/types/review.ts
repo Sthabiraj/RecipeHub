@@ -1,6 +1,5 @@
 export interface Review {
-  recipe: string; // Recipe ID
-  reviewer: string; // User ID
+  recipeId: string;
   rating: number;
   review?: string;
 }

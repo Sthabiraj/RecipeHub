@@ -12,7 +12,7 @@ export interface IReview {
 export interface CreateReviewInput {
   recipeId: string;
   rating: number;
-  review: string;
+  review?: string;
 }
 
 export interface UpdateReviewInput

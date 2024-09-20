@@ -1,8 +1,10 @@
 import RecipeButton from '@/components/buttons/recipe-button';
+import ReviewForm from '@/components/forms/review/review-form';
 import FacebookIcon from '@/components/icons/facebook';
 import PinterestIcon from '@/components/icons/pintrest';
 import XIcon from '@/components/icons/x';
 import { RatingComponent } from '@/components/rating-component';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { formatDate } from '@/lib/utils';
+import { formatDate, getInitials } from '@/lib/utils';
 import { recipeService } from '@/services';
 import { Bookmark, Mail, Printer, ShoppingCart, Star } from 'lucide-react';
 import Image from 'next/image';
@@ -33,10 +35,14 @@ export default async function RecipePage({
 
   return (
     <main className='mx-auto my-8 max-w-5xl px-4 sm:my-16 sm:px-6 lg:px-8'>
-      <h1 className='mb-10 text-4xl font-bold'>{recipe.title}</h1>
-      <section className='mb-8 flex flex-col text-sm sm:flex-row sm:justify-between'>
+      <h1 className='mb-8 text-4xl font-bold'>{recipe.title}</h1>
+      <section className='mb-6 flex flex-col text-sm sm:flex-row sm:justify-between'>
         <div className='mb-4 sm:mb-0'>
-          <RatingComponent initialRating={4} readOnly={true} showValue={true} />
+          <RatingComponent
+            initialRating={recipe.averageRating}
+            readOnly={true}
+            showValue={true}
+          />
         </div>
         <div className='flex items-center gap-3'>
           <p>
@@ -206,6 +212,27 @@ export default async function RecipePage({
             </Badge>
           ))}
         </div>
+      </section>
+      <section className='mb-14'>
+        <h2 className='mb-5 text-3xl font-semibold'>
+          Reviews ({recipe.reviewCount})
+        </h2>
+        <Card className='rounded-lg border bg-muted p-4 shadow-sm sm:p-6'>
+          <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6'>
+            <Avatar className='h-16 w-16 shrink-0 text-3xl'>
+              <AvatarImage
+                src={recipe.creator.profileImage}
+                alt='User avatar'
+              />
+              <AvatarFallback className='bg-muted-foreground/30 text-muted'>
+                {getInitials(recipe.creator.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className='flex-grow'>
+              <ReviewForm />
+            </div>
+          </div>
+        </Card>
       </section>
     </main>
   );

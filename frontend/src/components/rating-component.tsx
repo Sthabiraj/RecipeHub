@@ -16,7 +16,7 @@ export function RatingComponent({
   initialRating = 0,
   onChange,
   readOnly = false,
-  size = 5,
+  size = 8,
   showValue = false,
 }: RatingProps = {}) {
   const [rating, setRating] = useState(initialRating);
@@ -33,7 +33,7 @@ export function RatingComponent({
 
   return (
     <div className='flex items-center space-x-2'>
-      <div className='flex items-center space-x-1'>
+      <div className='flex items-center'>
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -43,14 +43,16 @@ export function RatingComponent({
             onMouseLeave={() => !readOnly && setHover(0)}
             aria-label={`Rate ${star} stars out of 5`}
             disabled={readOnly}
+            type='button'
           >
             <Star
               className={cn(
                 `h-${size} w-${size}`,
                 star <= (readOnly ? rating : hover || rating)
                   ? 'fill-primary text-primary'
-                  : 'fill-muted-foreground text-muted-foreground'
+                  : 'fill-muted-foreground/30 text-muted-foreground'
               )}
+              strokeWidth={0}
             />
           </button>
         ))}
