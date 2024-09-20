@@ -1,12 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
-// Define the structure of API responses
-interface ApiResponse {
-  success: boolean;
-  message: string;
-  error?: string;
-}
+import { ApiResponse } from "../types";
 
 // Define the structure of the JWT payload
 interface JwtPayload {
@@ -27,7 +21,7 @@ declare global {
 // Verify the token provided in the request
 export const verifyToken = (
   req: Request,
-  res: Response<ApiResponse>,
+  res: Response<ApiResponse<null>>,
   next: NextFunction
 ) => {
   const token = req.cookies.token;
@@ -35,7 +29,7 @@ export const verifyToken = (
   if (!token) {
     return res
       .status(401)
-      .json({ success: false, message: "Access denied. No token provided." });
+      .json({ success: false, error: "Access denied. No token provided." });
   }
 
   try {
@@ -50,19 +44,18 @@ export const verifyToken = (
     if (err instanceof jwt.TokenExpiredError) {
       return res.status(401).json({
         success: false,
-        message: "Token has expired.",
+        error: "Token has expired.",
       });
     }
     if (err instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({
         success: false,
-        message: "Invalid token.",
+        error: "Invalid token.",
       });
     }
     return res.status(500).json({
       success: false,
-      message: "An error occurred while authenticating.",
-      error: (err as Error).message,
+      error: "An error occurred while authenticating.",
     });
   }
 };

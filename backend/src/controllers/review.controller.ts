@@ -1,67 +1,106 @@
 import { Request, Response } from "express";
-import { Recipe, User, Review } from "../models";
-
-interface CreateReviewInput {
-  recipe: string;
-  reviewer: string;
-  rating: number;
-  review?: string;
-}
-
-interface UpdateReviewInput
-  extends Partial<Omit<CreateReviewInput, "recipe">> {}
+import { Recipe, Review } from "../models";
+import {
+  ApiResponse,
+  IReview,
+  CreateReviewInput,
+  UpdateReviewInput,
+} from "../types";
+import { Types } from "mongoose";
 
 // Create new review
-const createReview = async (
+export const createReview = async (
   req: Request<{}, {}, CreateReviewInput>,
-  res: Response
+  res: Response<ApiResponse<IReview>>
 ) => {
   try {
-    const { recipe, reviewer, rating, review } = req.body;
+    const { recipeId, rating, review } = req.body;
+    const userId = req.userId;
 
-    //   Check if the recipe exist
-    const recipeExists = await Recipe.findById(recipe);
-    if (!recipeExists) {
-      return res.status(400).json({ error: "Recipe not found" });
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "User not authenticated",
+      });
     }
 
-    //   Check if the reviewer exist
-    const reviewerExists = await User.findById(reviewer);
-    if (!reviewerExists) {
-      return res.status(400).json({ error: "Reviewer not found" });
+    if (!Types.ObjectId.isValid(recipeId) || !Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid recipe or user ID" });
     }
 
-    //   Create new review
-    const newReview = await Review.create({
-      recipe,
-      reviewer,
+    if (rating < 1 || rating > 5) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Rating must be between 1 and 5" });
+    }
+
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Recipe not found" });
+    }
+
+    const existingReview = await Review.findOne({
+      recipe: recipeId,
+      reviewer: userId,
+    });
+    if (existingReview) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Review already exists" });
+    }
+
+    const newReview = new Review({
+      recipe: recipeId,
+      reviewer: userId,
       rating,
       review,
     });
 
-    return res
-      .status(201)
-      .json({ message: "Review created sucessfully", newReview });
+    await newReview.save();
+
+    // Update recipe's average rating and review count
+    recipe.reviewCount += 1;
+    recipe.averageRating =
+      (recipe.averageRating * (recipe.reviewCount - 1) + rating) /
+      recipe.reviewCount;
+    await recipe.save();
+
+    return res.status(201).json({
+      success: true,
+      data: newReview,
+    });
   } catch (error) {
     return res.status(500).json({
-      message: "Error creating review",
-      error: (error as Error).message,
+      success: false,
+      error: "Error creating review",
     });
   }
 };
 
 // Get all reviews of the recipe
-const getReviews = async (
+export const getReviews = async (
   req: Request<{ recipeId: string }>,
-  res: Response
+  res: Response<ApiResponse<IReview[]>>
 ) => {
   try {
     const { recipeId } = req.params;
 
+    if (!Types.ObjectId.isValid(recipeId)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid recipe ID" });
+    }
+
     //   Check if the recipe exist
     const recipeExists = await Recipe.findById(recipeId);
     if (!recipeExists) {
-      return res.status(400).json({ error: "Recipe not found" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Recipe not found" });
     }
 
     //   Get all reviews of the recipe
@@ -69,65 +108,149 @@ const getReviews = async (
       "reviewer"
     );
 
-    return res.status(200).json({ reviews });
+    return res.status(200).json({
+      success: true,
+      data: reviews,
+    });
   } catch (error) {
     return res.status(500).json({
-      message: "Error getting reviews",
-      error: (error as Error).message,
+      success: false,
+      error: "Error getting reviews",
     });
   }
 };
 
 // Update review
-const updateReview = async (
-  req: Request<{ id: string }, {}, UpdateReviewInput>,
-  res: Response
+export const updateReview = async (
+  req: Request<{ reviewId: string }, {}, UpdateReviewInput>,
+  res: Response<ApiResponse<IReview>>
 ) => {
   try {
-    const { id } = req.params;
-    const review = req.body;
+    const { reviewId } = req.params;
+    const { rating, review } = req.body;
+    const userId = req.userId;
 
-    //   Check if the review exist
-    const reviewExists = await Review.findById(id);
-    if (!reviewExists) {
-      return res.status(400).json({ error: "Review not found" });
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "User not authenticated",
+      });
     }
 
-    //   Update fields
-    Object.assign(reviewExists, review);
+    if (!Types.ObjectId.isValid(reviewId)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid review ID" });
+    }
 
-    await reviewExists.save();
+    //   Check if the review exist
+    const existingReview = await Review.findById(reviewId);
+    if (!existingReview) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Review not found" });
+    }
 
-    return res.json({
-      message: "Review updated sucessfully",
-      review: reviewExists,
+    //   Check if the user is the owner of the review
+    if (existingReview.reviewer.toString() !== userId) {
+      return res.status(401).json({
+        success: false,
+        error: "You are not authorized to update this review",
+      });
+    }
+
+    const oldRating = existingReview.rating;
+    existingReview.rating = rating || existingReview.rating;
+    existingReview.review = review || existingReview.review;
+
+    await existingReview.save();
+
+    // Update recipe's average rating
+    const recipe = await Recipe.findById(existingReview.recipe);
+    if (recipe) {
+      recipe.averageRating =
+        (recipe.averageRating * recipe.reviewCount -
+          oldRating +
+          existingReview.rating) /
+        recipe.reviewCount;
+      await recipe.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: existingReview,
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Error updating review",
-      error: (error as Error).message,
+      success: false,
+      error: "Error updating review",
     });
   }
 };
 
 // Delete review
-const deleteReview = async (req: Request<{ id: string }>, res: Response) => {
+export const deleteReview = async (
+  req: Request<{ reviewId: string }>,
+  res: Response<ApiResponse<null>>
+) => {
   try {
-    const { id } = req.params;
+    const { reviewId } = req.params;
+    const userId = req.userId;
 
-    //   Check if the review exist
-    const reviewExists = await Review.findByIdAndDelete(id);
-    if (!reviewExists) {
-      return res.status(400).json({ error: "Review not found" });
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "User not authenticated",
+      });
     }
 
-    return res.json({ message: "Review deleted sucessfully" });
+    if (!Types.ObjectId.isValid(reviewId)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid review ID" });
+    }
+
+    //   Check if the review exist
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(400).json({
+        success: false,
+        error: "Review not found",
+      });
+    }
+
+    //   Check if the user is the owner of the review
+    if (review.reviewer.toString() !== userId) {
+      return res.status(401).json({
+        success: false,
+        error: "You are not authorized to delete this review",
+      });
+    }
+
+    await Review.findByIdAndDelete(reviewId);
+
+    // Update recipe's average rating and review count
+    const recipe = await Recipe.findById(review.recipe);
+    if (recipe) {
+      recipe.reviewCount -= 1;
+      if (recipe.reviewCount > 0) {
+        recipe.averageRating =
+          (recipe.averageRating * (recipe.reviewCount + 1) - review.rating) /
+          recipe.reviewCount;
+      } else {
+        recipe.averageRating = 0;
+      }
+      await recipe.save();
+    }
+
+    return res.json({
+      success: true,
+      data: null,
+    });
   } catch (error) {
     return res.status(500).json({
-      message: "Error deleting review",
-      error: (error as Error).message,
+      success: false,
+      error: "Error deleting review",
     });
   }
 };
-
-export { createReview, getReviews, updateReview, deleteReview };

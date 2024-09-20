@@ -1,8 +1,8 @@
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 
 export interface IRecipe {
   _id?: string;
-  creator: ObjectId;
+  creator: Types.ObjectId;
   coverImage: string;
   title: string;
   description: string;
@@ -25,6 +25,9 @@ export interface IRecipe {
     instruction: string;
   }[];
   tags: string[];
+  reviews: Types.ObjectId[];
+  averageRating: number;
+  reviewCount: number;
   createdAt: Date;
   updatedAt: Date;
 }

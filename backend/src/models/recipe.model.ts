@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { IRecipe } from "../types";
 
 const recipeSchema = new Schema<IRecipe>(
@@ -91,16 +91,22 @@ const recipeSchema = new Schema<IRecipe>(
         trim: true,
       },
     ],
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: true,
   }
 );
-
-recipeSchema.pre("save", function (next) {
-  this.updatedAt = new Date();
-  next();
-});
 
 const Recipe = model("Recipe", recipeSchema);
 
