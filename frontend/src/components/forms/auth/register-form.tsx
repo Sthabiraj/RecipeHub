@@ -1,7 +1,6 @@
 'use client';
 
 import CustomButton from '@/components/buttons/custom-button';
-import CustomInput from '@/components/inputs/custom-input';
 import { useRouter } from 'next/navigation';
 import { useRegister } from '@/hooks/useRegister';
 import { RegisterFormData, registerSchema } from '@/schemas/registerSchema';
@@ -9,16 +8,55 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import axios from 'axios';
+import {
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+  Form,
+  FormLabel,
+} from '@/components/ui/form';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+
+interface RegisterField {
+  label: string;
+  type: string;
+  placeholder: string;
+  name: 'name' | 'email' | 'password';
+}
+
+const registerFields: RegisterField[] = [
+  {
+    label: 'Full Name',
+    type: 'text',
+    placeholder: 'Enter your full name',
+    name: 'name',
+  },
+  {
+    label: 'E-mail Address',
+    type: 'email',
+    placeholder: 'Enter your e-mail',
+    name: 'email',
+  },
+  {
+    label: 'Password',
+    type: 'password',
+    placeholder: 'Enter your password',
+    name: 'password',
+  },
+];
 
 export default function RegisterForm() {
   const router = useRouter();
   const registerMutation = useRegister();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormData>({
+  const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -40,34 +78,39 @@ export default function RegisterForm() {
   };
 
   return (
-    <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
-      <CustomInput
-        label='Full Name'
-        placeholder='Enter your full name'
-        {...register('name')}
-        error={errors.name}
-      />
-      <CustomInput
-        label='E-mail Address'
-        placeholder='Enter your e-mail'
-        {...register('email')}
-        error={errors.email}
-      />
-      <CustomInput
-        label='Password'
-        placeholder='Enter your password'
-        type='password'
-        {...register('password')}
-        error={errors.password}
-      />
-      <CustomButton
-        className='disabled:bg- mt-2 w-full bg-[#2E5834] hover:bg-[#2E5834]/90 disabled:opacity-50'
-        type='submit'
-        isLoading={registerMutation.isPending}
-        loadingText='Creating Account...'
-      >
-        Create Account
-      </CustomButton>
-    </form>
+    <Form {...form}>
+      <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
+        {registerFields.map((registerField) => (
+          <FormField
+            key={registerField.name}
+            control={form.control}
+            name={registerField.name}
+            render={({ field, fieldState: { error } }) => (
+              <FormItem>
+                <FormLabel className='text-base'>
+                  {registerField.label}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className={cn('py-6', error && 'border-destructive')}
+                    placeholder={registerField.placeholder}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+        <CustomButton
+          className='mt-2 w-full'
+          type='submit'
+          isLoading={registerMutation.isPending}
+          loadingText='Creating Account...'
+        >
+          Create Account
+        </CustomButton>
+      </form>
+    </Form>
   );
 }

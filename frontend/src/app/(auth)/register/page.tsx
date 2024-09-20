@@ -6,13 +6,13 @@ import Link from 'next/link';
 
 export default function RegisterPage() {
   return (
-    <section className='flex min-h-screen items-center justify-center bg-white px-8 py-8 lg:rounded-l-3xl'>
+    <section className='flex min-h-screen items-center justify-center bg-background px-8 py-8 lg:rounded-l-3xl'>
       <div className='w-full max-w-lg space-y-6'>
         <h1 className='text-2xl font-semibold sm:text-3xl'>
           Create an Account
         </h1>
         <RegisterForm />
-        <div className='flex w-full items-center gap-3 text-[#A3A3A3]'>
+        <div className='flex w-full items-center gap-3 text-muted-foreground/50'>
           <hr className='w-full' />
           <span className='whitespace-nowrap text-sm'>OR</span>
           <hr className='w-full' />
@@ -24,7 +24,7 @@ export default function RegisterPage() {
             href='/login'
             className={cn(
               buttonVariants({ variant: 'link' }),
-              'p-0 text-[#2E5834]'
+              'p-0 text-primary'
             )}
           >
             Log In
